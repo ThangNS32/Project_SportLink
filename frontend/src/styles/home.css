@@ -1,0 +1,423 @@
+/* ========== TRANG HOMEPAGE ========== */
+.home-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1f2e 0%, #16213e 55%, #0f172a 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========== HEADER ========== */
+.home-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.home-header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 28px;
+  height: 64px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.home-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+  cursor: default;
+  user-select: none;
+}
+
+.home-header-actions {
+  justify-self: end;
+}
+
+.home-logo span {
+  color: #3b82f6;
+}
+
+/* ---- Nav 7 môn ---- */
+.home-nav {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.home-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.home-nav-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 7px 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+
+.home-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* ---- Actions bên phải ---- */
+.home-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.home-icon-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+
+.home-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.home-login-btn {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.home-login-btn:hover {
+  background: #2563eb;
+}
+
+/* ========== HERO ========== */
+.home-hero {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 64px; /* offset header */
+  text-align: center;
+}
+
+.home-hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 44px;
+}
+
+.home-hero-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.05;
+}
+
+.hero-line-1 {
+  font-size: clamp(56px, 9vw, 108px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -3px;
+}
+
+.hero-line-2 {
+  font-size: clamp(32px, 5.5vw, 72px);
+  font-weight: 800;
+  background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+
+.hero-line-3 {
+  font-size: clamp(32px, 5.5vw, 72px);
+  font-weight: 800;
+  background: linear-gradient(90deg, #a78bfa 0%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+
+.home-cta-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 44px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.25s, box-shadow 0.25s;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.45);
+}
+
+.home-cta-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 44px rgba(59, 130, 246, 0.55);
+}
+
+/* ========== AUTH MODAL OVERLAY ========== */
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-modal-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.auth-modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.25);
+  border: none;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.auth-modal-close-btn:hover {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* Dùng lại auth-container, auth-left, auth-right từ auth.css */
+.auth-modal-wrapper .auth-container {
+  border-radius: 0; /* modal wrapper đã có bo góc */
+  box-shadow: none;
+}
+
+/* Override link "Đăng ký ngay" / "Đăng nhập" thành button không có style */
+.auth-switch-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #1d6fd8;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.auth-switch-link:hover {
+  text-decoration: underline;
+}
+
+.sp-loc-btn {
+    display: flex;                                                                                                                                                                 
+    align-items: center;
+    gap: 5px;
+}
+
+
+  /* ========== USER BUTTON ========== */
+  .home-user-btn {                                                                                                                                          
+    display: flex;
+    align-items: center;                                                                                                                                    
+    gap: 8px;     
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);                                                                                                            
+    border-radius: 10px;
+    padding: 5px 12px 5px 6px;                                                                                                                              
+    cursor: pointer;
+    color: #fff;                                                                                                                                            
+    transition: background 0.2s;
+  }
+                                                                                                                                                            
+  .home-user-btn:hover {
+    background: rgba(255, 255, 255, 0.14);                                                                                                                  
+  }               
+
+  .home-user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;                                                                                                                                     
+    object-fit: cover;
+  }                                                                                                                                                         
+                  
+  .home-user-avatar--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #3b82f6;
+    color: #fff;                                                                                                                                            
+    font-size: 13px;
+    font-weight: 700;                                                                                                                                       
+  }               
+
+  .home-user-name {                                                                                                                                         
+    font-size: 13.5px;
+    font-weight: 600;                                                                                                                                       
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;                                                                                                                                    
+  }
+                                                                                                                                                            
+  /* ========== USER DROPDOWN ========== */
+  .home-user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;                                                                                                                                               
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);                                                                                                             
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);                                                                                                             
+    z-index: 200;
+    min-width: 240px;                                                                                                                                       
+    padding: 12px 0;
+    overflow: hidden;                                                                                                                                       
+  }               
+
+  .home-user-dropdown-header {                                                                                                                              
+    display: flex;
+    align-items: center;                                                                                                                                    
+    gap: 12px;    
+    padding: 8px 16px 14px;
+  }
+                                                                                                                                                            
+  .home-user-dropdown-avatar {
+    width: 42px;                                                                                                                                            
+    height: 42px; 
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .home-user-dropdown-name {                                                                                                                                
+    font-size: 14px;
+    font-weight: 700;                                                                                                                                       
+    color: #fff;  
+  }
+
+  .home-user-dropdown-role {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);                                                                                                                       
+    margin-top: 2px;
+  }                                                                                                                                                         
+                  
+  .home-user-dropdown-divider {                                                                                                                             
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);                                                                                                                  
+    margin: 4px 0;
+  }
+
+  .home-user-dropdown-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;                                                                                                                                    
+    padding: 8px 16px;
+    gap: 12px;                                                                                                                                              
+  }               
+
+  .home-user-info-label {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.45);                                                                                                                       
+  }
+                                                                                                                                                            
+  .home-user-info-value {
+    font-size: 13px;
+    color: #fff;                                                                                                                                            
+    font-weight: 500;
+  }                                                                                                                                                         
+                  
+  .home-user-info-credit {
+    color: #fbbf24;
+  }
+
+  .home-user-logout-btn {                                                                                                                                   
+    width: 100%;
+    padding: 10px 16px;                                                                                                                                     
+    text-align: left;
+    background: none;
+    border: none;
+    color: #f87171;
+    font-size: 13.5px;                                                                                                                                      
+    font-weight: 600;
+    cursor: pointer;                                                                                                                                        
+    transition: background 0.15s;
+  }
+
+  .home-user-logout-btn:hover {                                                                                                                             
+    background: rgba(248, 113, 113, 0.1);
+  }            
+  
+  .home-user-profile-btn {
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .home-user-profile-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }

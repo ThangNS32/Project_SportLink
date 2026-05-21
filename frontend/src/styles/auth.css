@@ -1,0 +1,246 @@
+/* Layout chung */
+/* Wrapper căn giữa toàn trang */                                                                                                                                                
+.auth-page {                                                                                                                                                                     
+    min-height: 100vh;
+    display: flex;                                                                                                                                                                 
+    align-items: center;                                    
+    justify-content: center;
+    background: #f0f4f8;
+    padding: 2rem;                                                                                                                                                                 
+}
+                                                                                                                                                                                
+/* Đổi lại auth-container thành card bo góc */                                                                                                                                   
+.auth-container {
+    display: flex;                                                                                                                                                                 
+    width: 100%;                                            
+    max-width: 900px;
+    min-height: 520px;                                                                                                                                                             
+    border-radius: 20px;
+    overflow: hidden;                                                                                                                                                              
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);            
+}       
+
+/* Panel trái - màu xanh */
+.auth-left {
+  width: 42%;
+  background: linear-gradient(160deg, #1d6fd8, #1251a3);
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.auth-logo {
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -1px;
+}
+
+.auth-logo span {
+  color: #93c5fd;
+}
+
+.auth-tagline {
+  font-size: 15px;
+  color: #bfdbfe;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.auth-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.auth-pill {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* Panel phải - form */
+.auth-right {
+  flex: 1;
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #fff;
+}
+
+/* Tabs Đăng nhập / Đăng ký */
+.auth-tabs {
+  display: flex;
+  border-bottom: 2px solid #e8ecf1;
+  margin-bottom: 28px;
+}
+
+.auth-tab {
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #9ca3af;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  text-decoration: none;
+}
+
+.auth-tab.active {
+  color: #1d6fd8;
+  border-bottom-color: #1d6fd8;
+}
+
+/* Form fields */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  height: 44px;
+  border: 1.5px solid #e8ecf1;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: #111;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #1d6fd8;
+}
+
+/* Nút chính */
+.btn-primary {
+  width: 100%;
+  height: 44px;
+  background: #1d6fd8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #1251a3;
+}
+
+.btn-primary:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+/* Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background: #e8ecf1;
+}
+
+.auth-divider-text {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Nút Google */
+.btn-google {
+  width: 100%;
+  height: 44px;
+  border: 1.5px solid #e8ecf1;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.btn-google:hover {
+  border-color: #1d6fd8;
+}
+
+/* Link chuyển trang */
+.auth-switch {
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 18px;
+}
+
+.auth-switch a {
+  color: #1d6fd8;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Quên mật khẩu */
+.forgot-password {
+  text-align: right;
+  margin-bottom: 6px;
+}
+
+.forgot-password a {
+  font-size: 13px;
+  color: #1d6fd8;
+  text-decoration: none;
+}
+
+/* Thông báo lỗi */
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* Thông báo thành công */
+.success-message {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}

@@ -1,0 +1,169 @@
+/* ========== SPORT PAGE LAYOUT ========== */
+  .sp-page {                                                                                                                                                           
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1f2e 0%, #16213e 55%, #0f172a 100%);                                                                                        
+    color: #fff;                                                                                                                                                       
+    display: flex;
+    flex-direction: column;                                                                                                                                            
+  }               
+                                                                                                                                                                       
+  .sp-body {
+    display: flex;                                                                                                                                                     
+    gap: 20px;    
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    padding: calc(64px + 20px) 20px 32px;                                                                                                                              
+    align-items: flex-start;
+  }                                                                                                                                                                    
+                  
+  /* ========== SIDEBAR (container only) ========== */                                                                                                                 
+  .sp-sidebar {   
+    width: 268px;
+    flex-shrink: 0;                                                                                                                                                    
+    position: sticky;
+    top: 84px;                                                                                                                                                         
+    max-height: calc(100vh - 90px);
+    overflow-y: auto;                                                                                                                                                  
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.08) transparent;                                                                                                               
+  }                                                                                                                                                                    
+   
+  /* ========== MAIN ========== */                                                                                                                                     
+  .sp-main {      
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }                                                                                                                                                                    
+   
+  /* Banner */                                                                                                                                                         
+  .sp-banner {    
+    background: linear-gradient(135deg, #2563eb 0%, #6366f1 100%);
+    border-radius: 16px;                                                                                                                                               
+    padding: 22px 28px;
+    display: flex;                                                                                                                                                     
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;                                                                                                                                                         
+  }
+  .sp-banner-title {                                                                                                                                                   
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 5px;                                                                                                                                                
+  }
+  .sp-banner-desc {                                                                                                                                                    
+    font-size: 13px;
+    color: rgba(255,255,255,0.78);
+  }                                                                                                                                                                    
+  .sp-create-btn {
+    background: rgba(255,255,255,0.18);                                                                                                                                
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    border-radius: 10px;                                                                                                                                               
+    padding: 10px 18px;
+    font-size: 14px;                                                                                                                                                   
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;                                                                                                                                               
+    transition: background 0.2s;
+    flex-shrink: 0;                                                                                                                                                    
+  }               
+  .sp-create-btn:hover { background: rgba(255,255,255,0.28); }
+                                                                                                                                                                       
+  /* Meta row */
+  .sp-meta {                                                                                                                                                           
+    display: flex;
+    align-items: center;
+  }
+  .sp-count {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);                                                                                                                                     
+    display: flex;
+    align-items: center;                                                                                                                                               
+    gap: 7px;     
+  }                                                                                                                                                                    
+  .sp-count-dot {
+    width: 7px;                                                                                                                                                        
+    height: 7px;  
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+  }                                                                                                                                                                    
+   
+  /* Loading / empty */                                                                                                                                                
+  .sp-loading,    
+  .sp-empty {
+    text-align: center;
+    color: rgba(255,255,255,0.35);                                                                                                                                     
+    padding: 72px 0;
+    font-size: 15px;                                                                                                                                                   
+  }               
+
+  /* Post list */                                                                                                                                                      
+  .sp-post-list {
+    display: flex;                                                                                                                                                     
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 32px;
+  }                                                                                                                                                                    
+   
+  /* ========== LOCATION DROPDOWN ========== */                                                                                                                        
+  .sp-loc-dropdown {
+    position: absolute;
+    top: 110%;
+    right: 0;                                                                                                                                                          
+    background: #1e2840;
+    border: 1px solid rgba(255,255,255,0.1);                                                                                                                           
+    border-radius: 10px;                                                                                                                                               
+    z-index: 200;
+    min-width: 180px;                                                                                                                                                  
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }                                                                                                                                                                    
+  .sp-loc-item {
+    display: block;                                                                                                                                                    
+    width: 100%;  
+    padding: 10px 16px;
+    text-align: left;                                                                                                                                                  
+    background: transparent;
+    border: none;                                                                                                                                                      
+    cursor: pointer;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    transition: background 0.15s;                                                                                                                                      
+  }
+  .sp-loc-item:hover { background: rgba(255,255,255,0.07); color: #fff; }                                                                                              
+  .sp-loc-item--active { color: #60a5fa; font-weight: 600; }
+                                                                                                                                                                       
+  .sp-loc-btn {
+    display: flex;                                                                                                                                                     
+    align-items: center;
+    gap: 5px;                                                                                                                                                          
+  }
+                                                                                                                                                                       
+  /* ========== ACTIVE NAV BUTTON ========== */
+  .home-nav-btn--active {
+    background: rgba(59,130,246,0.18) !important;
+    color: #60a5fa !important;                                                                                                                                         
+  }
+                                                                                                                                                                       
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 768px) {
+    .sp-body {                                                                                                                                                         
+      flex-direction: column;
+      padding: calc(64px + 12px) 12px 24px;                                                                                                                            
+      gap: 12px;                                                                                                                                                       
+    }
+    .sp-sidebar {                                                                                                                                                      
+      width: 100%;
+      position: static;
+      max-height: none;
+    }
+    .sp-banner {                                                                                                                                                       
+      flex-direction: column;
+      align-items: flex-start;                                                                                                                                         
+    }             
+  }
