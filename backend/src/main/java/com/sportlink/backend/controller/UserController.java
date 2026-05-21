@@ -5,7 +5,9 @@ import com.sportlink.backend.dto.request.AdminCreateUserRequest;
 import com.sportlink.backend.dto.request.UpdateProfileRequest;
 import com.sportlink.backend.dto.request.UpdateLocationRequest;
 import com.sportlink.backend.dto.response.ApiResponse;
+import com.sportlink.backend.dto.response.SportPostResponse;
 import com.sportlink.backend.dto.response.UserResponse;
+import com.sportlink.backend.service.PostService;
 import com.sportlink.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -13,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,6 +27,7 @@ import java.util.List;
 public class UserController {
 
     UserService userService;
+    PostService postService;
 
     // ── GET /api/users/me ──────────────────────────────────
     // Lấy thông tin user đang đăng nhập
@@ -144,6 +148,42 @@ public class UserController {
                 ApiResponse.<UserResponse>builder()
                         .message("Tạo tài khoản thành công")
                         .result(userService.adminCreateUser(request))
+                        .build()
+        );
+    }
+
+    // ── POST /api/users/me/avatar ──────────────────────────
+    // Upload ảnh đại diện từ máy
+    @PostMapping(value = "/me/avatar", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<UserResponse>> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(
+                ApiResponse.<UserResponse>builder()
+                        .message("Cập nhật ảnh đại diện thành công")
+                        .result(userService.uploadAvatar(file))
+                        .build()
+        );
+    }
+
+    // ── GET /api/users/admin/posts ─────────────────────────
+    // ADMIN: Xem tất cả bài đăng
+    @GetMapping("/admin/posts")
+    public ResponseEntity<ApiResponse<List<SportPostResponse>>> getAllPosts() {
+        return ResponseEntity.ok(
+                ApiResponse.<List<SportPostResponse>>builder()
+                        .result(postService.getAllPosts())
+                        .build()
+        );
+    }
+
+    // ── DELETE /api/users/admin/posts/{postId} ─────────────
+    // ADMIN: Xoá bài đăng vi phạm
+    @DeleteMapping("/admin/posts/{postId}")
+    public ResponseEntity<ApiResponse<Void>> adminDeletePost(
+            @PathVariable Long postId) {
+        postService.adminDeletePost(postId);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .message("Đã xoá bài đăng")
                         .build()
         );
     }

@@ -35,6 +35,7 @@ public enum ErrorCode {
     REQUEST_ALREADY_SENT(3002, "Bạn đã gửi yêu cầu trước đó rồi"),
     REQUEST_NOT_PENDING(3003, "Yêu cầu không ở trạng thái chờ duyệt"),
     CANNOT_JOIN_OWN_POST(3004, "Bạn không thể tham gia bài đăng của chính mình"),
+    POST_NOT_AVAILABLE(3005, "Bài đăng không còn khả dụng"),
 
     // ── Chat ───────────────────────────────────────────────
     GROUP_NOT_FOUND(4001, "Không tìm thấy nhóm chat"),
@@ -43,7 +44,16 @@ public enum ErrorCode {
     // ── Rating ─────────────────────────────────────────────
     RATING_NOT_ALLOWED(5001, "Chưa đủ điều kiện để đánh giá"),
     ALREADY_RATED(5002, "Bạn đã đánh giá người này rồi"),
-    CANNOT_RATE_YOURSELF(5003, "Không thể tự đánh giá bản thân");
+    CANNOT_RATE_YOURSELF(5003, "Không thể tự đánh giá bản thân"),
+
+    // ── Sport ──────────────────────────────────────────────
+    SPORT_ALREADY_ADDED(6001, "Bạn đã thêm môn thể thao này rồi"),
+    SPORT_NOT_IN_FAVORITES(6002, "Môn thể thao không có trong danh sách yêu thích"),
+
+    // ── File Upload ────────────────────────────────────────
+    INVALID_FILE(7001, "File không được rỗng"),
+    INVALID_FILE_TYPE(7002, "Chỉ chấp nhận file JPG, PNG, WEBP"),
+    FILE_UPLOAD_FAILED(7003, "Tải file thất bại, vui lòng thử lại");
 
     ErrorCode(int code, String message) {
         this.code = code;

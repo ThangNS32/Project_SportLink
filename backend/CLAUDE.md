@@ -28,35 +28,41 @@ The app runs on `http://localhost:8080/sportlink`.
 Standard Spring Boot layered architecture: Controller → Service → Repository → Entity.
 
 **Package structure under `com.sportlink.backend`:**
-- `controller/` — REST endpoints. Currently only `AuthController` (`/api/auth`).
-- `service/` — Business logic. `AuthService` handles all auth operations.
+- `controller/` — REST endpoints: `AuthController` (`/api/auth`), `UserController` (`/api/users`), `SportController` (`/api/users/me/sports`), `PostController` (`/api/posts`).
+- `service/` — Business logic: `AuthService`, `UserService`, `SportService`, `PostService`, `GoogleAuthService`, `FileStorageService`.
+- `scheduler/` — `PostScheduler`: runs every 60s to set expired posts (`playTime` passed → `status=expired`).
 - `repository/` — Spring Data JPA interfaces extending `JpaRepository`.
-- `entity/` — JPA entities (`User`, `InvalidatedToken`).
-- `dto/request/` and `dto/response/` — Request/response DTOs (validated with Jakarta Bean Validation).
-- `mapper/` — MapStruct interfaces for DTO ↔ entity conversion (Spring component model).
-- `exception/` — `AppException` (custom RuntimeException carrying an `ErrorCode`), `ErrorCode` enum, and `GlobalExceptionHandler` (@RestControllerAdvice).
-- `configuration/` — `SecurityConfig`, `CustomJwtDecoder`, `ApplicationInitConfig`.
+- `entity/` — JPA entities: `User`, `Sport`, `SportPost`, `InvalidatedToken`. Enums: `SportType` (bong_da, cau_long, pickleball), `SkillLevel`, `PostType`, `PostStatus`, `PlayFormat`, `SlotsRange`, `DistanceRange`.
+- `dto/request/` and `dto/response/` — Request/response DTOs validated with Jakarta Bean Validation.
+- `mapper/` — MapStruct interfaces: `UserMapper` (User ↔ DTOs, Sport ↔ UserSportResponse), `SportPostMapper` (SportPost ↔ SportPostResponse).
+- `exception/` — `AppException` (carries `ErrorCode`), `GlobalExceptionHandler` (@RestControllerAdvice). Error messages are in Vietnamese.
+- `configuration/` — `SecurityConfig`, `CustomJwtDecoder`, `ApplicationInitConfig`, `WebConfig`.
 
 **All API responses are wrapped in `ApiResponse<T>`** with `code`, `message`, and `result` fields.
 
-**Error handling:** Throw `AppException(ErrorCode.SOME_CODE)` anywhere; `GlobalExceptionHandler` maps it to the appropriate HTTP status. Add new error codes to the `ErrorCode` enum (with HTTP status and message).
+**Error handling:** Throw `AppException(ErrorCode.SOME_CODE)` anywhere; `GlobalExceptionHandler` maps it to the appropriate HTTP status.
 
 ## Authentication & Security
 
-- JWT-based auth using Nimbus JOSE (HS512 algorithm). Tokens contain `userId`, `scope` (`SCOPE_USER` or `SCOPE_ADMIN`), and a `jti` UUID.
-- Token blacklist stored in `invalidated_tokens` table — used for logout and refresh (old token is invalidated on refresh).
-- `CustomJwtDecoder` validates tokens against the blacklist on every request.
-- Public endpoints are explicitly listed in `SecurityConfig`. All others require a valid JWT. Admin routes (`/api/admin/**`) require `SCOPE_ADMIN`.
-- Default admin account (`admin@sportlink.com` / `admin123`) is auto-created at startup by `ApplicationInitConfig` if no admin exists.
+- JWT-based auth using Nimbus JOSE (HS512). Token claims: `userId`, `scope` (`SCOPE_USER` or `SCOPE_ADMIN`), `jti` UUID.
+- Token blacklist in `invalidated_tokens` table. `CustomJwtDecoder` validates against blacklist on every request. Always check `existsById(jti)` before inserting to avoid duplicate key errors on concurrent requests.
+- Public endpoints listed in `SecurityConfig.PUBLIC_ENDPOINTS` (all POST). `GET /api/posts` is also public.
+- Admin routes use `@PreAuthorize("hasAuthority('SCOPE_ADMIN')")` at the service layer.
+- Default admin: `admin@sportlink.com` / `admin123` — auto-created by `ApplicationInitConfig`.
 
 ## Database
 
-- MySQL 8. Configure connection in `application.yaml`. Hibernate DDL auto is set to `update` (schema evolves automatically in dev).
-- JWT config (secret key, valid duration, refreshable duration) is also in `application.yaml`.
+- MySQL 8. Connection configured in `application.yaml`. Hibernate DDL auto = `update`.
+- JWT config (signer-key, valid-duration, refreshable-duration) also in `application.yaml`.
+- Key tables: `users`, `user_sports`, `sport_posts`, `invalidated_tokens`. Planned: `join_requests`, `chat_groups`, `group_members`, `messages`, `notifications`, `ratings`.
 
 ## Key Conventions
 
-- Use Lombok (`@Data`, `@Builder`, `@RequiredArgsConstructor`, etc.) on all DTOs and entities.
-- Add MapStruct mapper methods in `UserMapper` (or new mapper interfaces) for any new entity ↔ DTO conversions. The mapper uses `componentModel = "spring"`.
-- `ErrorCode` messages are currently in Vietnamese — keep new codes consistent.
-- `User` entity uses `@PrePersist` to set defaults (role=user, isActive=true, trustScore=5.0, authProvider=local, createdAt=now).
+- Lombok on all DTOs and entities (`@Data`, `@Builder`, `@RequiredArgsConstructor`, `@FieldDefaults`).
+- MapStruct mappers use `componentModel = "spring"` and `NullValuePropertyMappingStrategy.IGNORE` for update methods. Enum → String mappings must use `expression = "java(...)"` since MapStruct does not auto-convert.
+- `SportPost.distanceKm` in the response is not mapped by MapStruct — it is set manually in `PostService` after Haversine calculation.
+- Haversine distance calculation is done in-memory in `PostService` (not in SQL). Posts are fetched by basic filters first, then filtered/sorted by distance in Java streams.
+- `User.@PrePersist` sets defaults: role=user, isActive=true, trustScore=5.0, totalRating=0, authProvider=local, createdAt=now.
+- `SportPost.@PrePersist` sets defaults: status=open, slotsFilled=0, createdAt=now.
+- Auto-ban: `UserService.updateTrustScore()` calls `banUser()` automatically when `newStars <= 2`.
+- `@EnableScheduling` is required on `Application.java` for `PostScheduler` to run.

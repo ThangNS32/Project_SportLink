@@ -3,15 +3,14 @@ package com.sportlink.backend.mapper;
 import com.sportlink.backend.dto.request.RegisterRequest;
 import com.sportlink.backend.dto.request.UpdateProfileRequest;
 import com.sportlink.backend.dto.response.UserResponse;
+import com.sportlink.backend.dto.response.UserSportResponse;
+import com.sportlink.backend.entity.Sport;
 import com.sportlink.backend.entity.User;
 import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(
-        componentModel = "spring",
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
 
     // RegisterRequest → User entity
@@ -37,6 +36,10 @@ public interface UserMapper {
             target = "trustScore",
             expression = "java(user.getTrustScore() != null ? user.getTrustScore().doubleValue() : 5.0)"
     )
+    @Mapping(
+            target = "banUntil",
+            expression = "java(user.getBanUntil() != null ? user.getBanUntil().toString() : null)"
+    )
     UserResponse toUserResponse(User user);
 
     // List<User> → List<UserResponse>
@@ -55,4 +58,7 @@ public interface UserMapper {
     @Mapping(target = "totalRating",  ignore = true)
     @Mapping(target = "createdAt",    ignore = true)
     void updateUser(@MappingTarget User user, UpdateProfileRequest request);
+
+    UserSportResponse toUserSportResponse(Sport sport);
+
 }

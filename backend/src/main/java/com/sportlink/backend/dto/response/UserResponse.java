@@ -3,6 +3,8 @@ package com.sportlink.backend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -20,4 +22,6 @@ public class UserResponse {
     Integer totalRating;
     Boolean isActive;
     String createdAt;
+    List<UserSportResponse> sports;
+    String banUntil;
 }

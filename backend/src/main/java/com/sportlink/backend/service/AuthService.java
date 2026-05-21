@@ -120,12 +120,14 @@ public class AuthService {
             Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
             // Lưu token vào blacklist
-            invalidatedTokenRepository.save(
-                    InvalidatedToken.builder()
-                            .id(jti)
-                            .expiryTime(expiryTime)
-                            .build()
-            );
+            if (!invalidatedTokenRepository.existsById(jti)) {
+                invalidatedTokenRepository.save(
+                        InvalidatedToken.builder()
+                                .id(jti)
+                                .expiryTime(expiryTime)
+                                .build()
+                );
+            }
             log.info("User logged out, token blacklisted: {}", jti);
         } catch (AppException e) {
             log.info("Token already expired, logout anyway");
@@ -137,19 +139,32 @@ public class AuthService {
             throws ParseException, JOSEException {
 
         var signedJWT = verifyToken(request.getToken(), true);
+        String jti = signedJWT.getJWTClaimsSet().getJWTID();
 
-        // Blacklist token cũ
-        invalidatedTokenRepository.save(
-                InvalidatedToken.builder()
-                        .id(signedJWT.getJWTClaimsSet().getJWTID())
-                        .expiryTime(signedJWT.getJWTClaimsSet().getExpirationTime())
-                        .build()
-        );
+        if (!invalidatedTokenRepository.existsById(jti)) {
+            invalidatedTokenRepository.save(
+                    InvalidatedToken.builder()
+                            .id(jti)
+                            .expiryTime(signedJWT.getJWTClaimsSet().getExpirationTime())
+                            .build()
+            );
+        }
 
         // Tạo token mới
         String email = signedJWT.getJWTClaimsSet().getSubject();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Kiểm tra tài khoản bị khoá tạm thời
+        if (user.getBanUntil() != null &&
+                user.getBanUntil().isAfter(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.ACCOUNT_BANNED);
+        }
+
+        // Kiểm tra tài khoản bị vô hiệu hoá vĩnh viễn
+        if (!user.getIsActive()) {
+            throw new AppException(ErrorCode.ACCOUNT_DISABLED);
+        }
 
         return buildAuthResponse(user);
     }

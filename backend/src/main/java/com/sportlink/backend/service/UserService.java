@@ -3,10 +3,12 @@ package com.sportlink.backend.service;
 import com.sportlink.backend.dto.request.AdminCreateUserRequest;
 import com.sportlink.backend.dto.request.UpdateProfileRequest;
 import com.sportlink.backend.dto.response.UserResponse;
+import com.sportlink.backend.dto.response.UserSportResponse;
 import com.sportlink.backend.entity.User;
 import com.sportlink.backend.exception.AppException;
 import com.sportlink.backend.exception.ErrorCode;
 import com.sportlink.backend.mapper.UserMapper;
+import com.sportlink.backend.repository.SportRepository;
 import com.sportlink.backend.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +18,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +33,8 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    final FileStorageService fileStorageService;
+    final SportRepository sportRepository;
 
     // ── Lấy thông tin user đang đăng nhập ─────────────────
     public UserResponse getMyInfo() {
@@ -37,8 +43,17 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        UserResponse response = userMapper.toUserResponse(user);
+
+        // Thêm danh sách môn yêu thích
+        List<UserSportResponse> sports = sportRepository.findByUser(user)
+                .stream()
+                .map(userMapper::toUserSportResponse)
+                .collect(Collectors.toList());
+        response.setSports(sports);
+
         log.info("Getting info for user: {}", email);
-        return userMapper.toUserResponse(user);
+        return response;
     }
 
     // ── Lấy thông tin user theo ID ────────────────────────
@@ -46,7 +61,15 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        return userMapper.toUserResponse(user);
+        UserResponse response = userMapper.toUserResponse(user);
+
+        List<UserSportResponse> sports = sportRepository.findByUser(user)
+                .stream()
+                .map(userMapper::toUserSportResponse)
+                .collect(Collectors.toList());
+        response.setSports(sports);
+
+        return response;
     }
 
     // ── Cập nhật profile ──────────────────────────────────
@@ -139,32 +162,8 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         user.setBanUntil(LocalDateTime.now().plusDays(7));
-        user.setIsActive(false);
         userRepository.save(user);
         log.warn("User banned for 7 days: {}", userId);
-    }
-
-    // ── Cập nhật trust score sau khi bị đánh giá ──────────
-    public void updateTrustScore(Long userId, int newStars) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        // Tính lại điểm trung bình
-        int totalRating = user.getTotalRating();
-        double currentScore = user.getTrustScore() != null
-                ? user.getTrustScore().doubleValue() : 5.0;
-
-        double newScore = ((currentScore * totalRating) + newStars)
-                / (totalRating + 1);
-
-        // Làm tròn 1 chữ số thập phân
-        newScore = Math.round(newScore * 10.0) / 10.0;
-
-        user.setTrustScore(new java.math.BigDecimal(newScore));
-        user.setTotalRating(totalRating + 1);
-
-        userRepository.save(user);
-        log.info("Trust score updated for user {}: {} → {}", userId, currentScore, newScore);
     }
 
     // ── Private: Lấy email từ SecurityContext ──────────────
@@ -203,4 +202,28 @@ public class UserService {
         log.info("Admin created user: {}", user.getEmail());
         return userMapper.toUserResponse(user);
     }
+
+    // ── Upload avatar ─────────────────────────────────────
+    public UserResponse uploadAvatar(MultipartFile file) {
+        String email = getCurrentEmail();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Xoá ảnh cũ nếu có (chỉ xoá file local, không xoá URL từ Google)
+        if (user.getAvatarUrl() != null && user.getAvatarUrl().startsWith("/uploads/")) {
+            String oldFileName = user.getAvatarUrl()
+                    .substring(user.getAvatarUrl().lastIndexOf("/") + 1);
+            fileStorageService.deleteAvatar(oldFileName);
+        }
+
+        // Lưu file mới
+        String fileName = fileStorageService.storeAvatar(file);
+        user.setAvatarUrl("/uploads/avatars/" + fileName);
+
+        user = userRepository.save(user);
+        log.info("Avatar uploaded for user: {}", email);
+        return userMapper.toUserResponse(user);
+    }
+
 }

@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = e.getErrorCode();
         log.warn("App exception: {} - {}", errorCode.getCode(), errorCode.getMessage());
         return ResponseEntity
-                .status(errorCode.getCode() >= 500 ? 500 : 400)
+                .status(400)
                 .body(ApiResponse.<Void>builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())
