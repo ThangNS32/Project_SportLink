@@ -31,6 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### Local config (chứa thông tin nhạy cảm) ###
-src/main/resources/application.yaml
