@@ -138,7 +138,7 @@ function AuthModal({ onClose, defaultTab = "login", onLoginSuccess }) {
   // ---- Google login ----
   const handleGoogleLogin = () => {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    const redirectUri = "http://localhost:5173/auth/google/callback";
+    const redirectUri = window.location.origin + "/auth/google/callback";
     const googleAuthUrl =
       `https://accounts.google.com/o/oauth2/v2/auth?` +
       `client_id=${clientId}` +
