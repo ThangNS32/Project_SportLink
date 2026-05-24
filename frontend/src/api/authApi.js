@@ -9,7 +9,7 @@ const authApi = {
   login: (data) => api.post("/api/auth/login", data),
 
   // Đăng nhập Google
-  loginWithGoogle: (code) => api.post("/api/auth/google", { code }),
+  loginWithGoogle: (code, redirectUri) => api.post("/api/auth/google", { code, redirectUri }),
 
   // Logout
   logout: (token) => api.post("/api/auth/logout", { token }),

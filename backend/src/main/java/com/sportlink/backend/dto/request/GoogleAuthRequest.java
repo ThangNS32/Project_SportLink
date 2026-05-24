@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GoogleAuthRequest {
-    // Code mà Google trả về cho React
     String code;
+    String redirectUri;
 }

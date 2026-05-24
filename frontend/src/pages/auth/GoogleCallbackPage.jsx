@@ -13,6 +13,7 @@ function GoogleCallbackPage() {
       called.current = true;
       // Lấy code từ URL
       const code = new URLSearchParams(window.location.search).get("code");
+      const redirectUri = window.location.origin + "/auth/google/callback";
 
       if (!code) {
         setStatus("Không tìm thấy code từ Google!");
@@ -21,7 +22,7 @@ function GoogleCallbackPage() {
       }
 
       try {
-        const response = await authApi.loginWithGoogle(code);
+        const response = await authApi.loginWithGoogle(code, redirectUri);
         const data = response.data;
 
         if (data.result?.token) {

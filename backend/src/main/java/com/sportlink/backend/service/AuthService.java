@@ -243,10 +243,10 @@ public class AuthService {
     }
 
     // ── ĐĂNG NHẬP GOOGLE ──────────────────────────────────
-    public AuthResponse loginWithGoogle(String code) {
+    public AuthResponse loginWithGoogle(String code, String redirectUri) {
 
         // Bước 1: Đổi code → access token
-        String accessToken = googleAuthService.getAccessToken(code);
+        String accessToken = googleAuthService.getAccessToken(code, redirectUri);
 
         // Bước 2: Lấy thông tin user từ Google
         GoogleUserInfo googleUser = googleAuthService.getUserInfo(accessToken);

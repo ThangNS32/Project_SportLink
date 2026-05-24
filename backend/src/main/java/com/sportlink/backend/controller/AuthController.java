@@ -94,7 +94,7 @@ public class AuthController {
         return ResponseEntity.ok(
                 ApiResponse.<AuthResponse>builder()
                         .message("Đăng nhập Google thành công")
-                        .result(authService.loginWithGoogle(request.getCode()))
+                        .result(authService.loginWithGoogle(request.getCode(), request.getRedirectUri()))
                         .build()
         );
     }

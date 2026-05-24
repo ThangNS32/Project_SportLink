@@ -38,17 +38,15 @@ public class GoogleAuthService {
     final ObjectMapper objectMapper = new ObjectMapper();
 
     // ── Đổi Authorization Code → Access Token ─────────────
-    public String getAccessToken(String code) {
-        // 1. Headers
+    public String getAccessToken(String code, String frontendRedirectUri) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        // 2. Body (là cái params này)
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code",          code);
         params.add("client_id",     clientId);
         params.add("client_secret", clientSecret);
-        params.add("redirect_uri",  redirectUri);
+        params.add("redirect_uri",  frontendRedirectUri != null ? frontendRedirectUri : redirectUri);
         params.add("grant_type",    "authorization_code");
 
         // 3. Đóng gói lại thành 1 HTTP request
