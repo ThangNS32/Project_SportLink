@@ -67,7 +67,6 @@ public class RatingService {
                 .tags(request.getTags())
                 .build();
         ratingRepository.save(rating);
-        notificationService.createRatingNotification(currentUser, ratedUser, request.getStars(), request.getTags());
 
         // Kiểm tra người kia đã submit chưa → nếu rồi thì reveal cả 2 ngay
         boolean otherAlreadyRated = ratingRepository
@@ -91,6 +90,11 @@ public class RatingService {
             r.setIsRevealed(true);
         }
         ratingRepository.saveAll(ratings);
+
+        for (Rating r : ratings) {
+            notificationService.createRatingNotification(
+                    r.getRater(), r.getRated(), r.getStars(), r.getTags());
+        }
 
         // Tính lại trustScore cho từng người bị đánh giá
         ratings.stream()
