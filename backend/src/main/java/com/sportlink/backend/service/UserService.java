@@ -218,8 +218,8 @@ public class UserService {
         }
 
         // Lưu file mới
-        String fileName = fileStorageService.storeAvatar(file);
-        user.setAvatarUrl("/uploads/avatars/" + fileName);
+        String avatarUrl = fileStorageService.storeAvatar(file);
+        user.setAvatarUrl(avatarUrl);
 
         user = userRepository.save(user);
         log.info("Avatar uploaded for user: {}", email);

@@ -1,21 +1,20 @@
 package com.sportlink.backend.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.sportlink.backend.exception.AppException;
 import com.sportlink.backend.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class FileStorageService {
 
@@ -23,65 +22,25 @@ public class FileStorageService {
             "image/jpeg", "image/png", "image/webp"
     );
 
-    @Value("${app.upload.dir}")
-    private String uploadDir;
+    private final Cloudinary cloudinary;
 
-    // ── Lưu file ảnh, trả về tên file đã lưu ──────────────
     public String storeAvatar(MultipartFile file) {
-        // Kiểm tra file rỗng
-        if (file.isEmpty()) {
-            throw new AppException(ErrorCode.INVALID_FILE);
-        }
-
-        // Kiểm tra định dạng
-        if (!ALLOWED_TYPES.contains(file.getContentType())) {
-            throw new AppException(ErrorCode.INVALID_FILE_TYPE);
-        }
-
-        // Tạo tên file duy nhất tránh trùng
-        String extension = getExtension(file.getOriginalFilename());
-        String fileName = UUID.randomUUID() + extension;
+        if (file.isEmpty()) throw new AppException(ErrorCode.INVALID_FILE);
+        if (!ALLOWED_TYPES.contains(file.getContentType())) throw new AppException(ErrorCode.INVALID_FILE_TYPE);
 
         try {
-            Path uploadPath = Paths.get(uploadDir);
-
-            // Tạo thư mục nếu chưa có
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            // Lưu file
-            Path targetPath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-
-            log.info("Saved avatar file: {}", fileName);
-            return fileName;
-
+            Map result = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap("folder", "sportlink/avatars"));
+            String url = (String) result.get("secure_url");
+            log.info("Uploaded avatar to Cloudinary: {}", url);
+            return url;
         } catch (IOException e) {
-            log.error("Failed to store file: {}", e.getMessage());
+            log.error("Cloudinary upload failed: {}", e.getMessage());
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
     }
 
-    // ── Xoá file cũ khi user đổi avatar ───────────────────
-    public void deleteAvatar(String fileName) {
-        if (fileName == null || fileName.isBlank()) return;
-
-        try {
-            Path filePath = Paths.get(uploadDir).resolve(fileName);
-            Files.deleteIfExists(filePath);
-            log.info("Deleted old avatar: {}", fileName);
-        } catch (IOException e) {
-            log.warn("Could not delete old avatar: {}", e.getMessage());
-        }
-    }
-
-    // ── Private helper ─────────────────────────────────────
-    private String getExtension(String originalFilename) {
-        if (originalFilename == null || !originalFilename.contains(".")) {
-            return ".jpg";
-        }
-        return originalFilename.substring(originalFilename.lastIndexOf("."));
+    public void deleteAvatar(String avatarUrl) {
+        if (avatarUrl == null || avatarUrl.startsWith("https://")) return;
     }
 }
-
