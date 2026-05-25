@@ -4,6 +4,7 @@ import {
   PLAY_FORMATS,
 } from "../constants/filterConfig";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import LocationPicker from "../common/LocationPicker";
 import "../../styles/filter-sidebar.css";
 
@@ -197,7 +198,7 @@ function FilterSidebar({
         </button>
       </div>
 
-      {showVenuePicker && (
+      {showVenuePicker && createPortal(
         <LocationPicker
           multiSelect
           onSelect={(venues) => {
@@ -205,7 +206,8 @@ function FilterSidebar({
             setShowVenuePicker(false);
           }}
           onClose={() => setShowVenuePicker(false)}
-        />
+        />,
+        document.body
       )}
     </aside>
   );
