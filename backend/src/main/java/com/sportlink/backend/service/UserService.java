@@ -210,13 +210,6 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        // Xoá ảnh cũ nếu có (chỉ xoá file local, không xoá URL từ Google)
-        if (user.getAvatarUrl() != null && user.getAvatarUrl().startsWith("/uploads/")) {
-            String oldFileName = user.getAvatarUrl()
-                    .substring(user.getAvatarUrl().lastIndexOf("/") + 1);
-            fileStorageService.deleteAvatar(oldFileName);
-        }
-
         // Lưu file mới
         String avatarUrl = fileStorageService.storeAvatar(file);
         user.setAvatarUrl(avatarUrl);

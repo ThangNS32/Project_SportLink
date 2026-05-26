@@ -47,7 +47,7 @@ public class SecurityConfig {
                         // Chỉ xem danh sách bài đăng không cần token
                         .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
 
-                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/api/overpass/**").permitAll()
 
                         // Admin routes - chỉ ADMIN mới vào được
                         .requestMatchers("/api/admin/**").hasAuthority("SCOPE_ADMIN")
