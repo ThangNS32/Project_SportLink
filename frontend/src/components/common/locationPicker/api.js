@@ -1,6 +1,6 @@
 import { haversineKm, formatAddress } from "./utils";
 
-const BACKEND = (import.meta.env.VITE_API_URL || "http://localhost:8080") + "/sportlink";
+const BACKEND = import.meta.env.VITE_API_URL || "http://localhost:8080/sportlink";
 
 export async function fetchNearbyVenues(center) {
   const [lat, lng] = center;
