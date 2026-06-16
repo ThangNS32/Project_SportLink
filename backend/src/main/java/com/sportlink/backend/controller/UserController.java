@@ -5,9 +5,7 @@ import com.sportlink.backend.dto.request.AdminCreateUserRequest;
 import com.sportlink.backend.dto.request.UpdateProfileRequest;
 import com.sportlink.backend.dto.request.UpdateLocationRequest;
 import com.sportlink.backend.dto.response.ApiResponse;
-import com.sportlink.backend.dto.response.SportPostResponse;
 import com.sportlink.backend.dto.response.UserResponse;
-import com.sportlink.backend.service.PostService;
 import com.sportlink.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -27,7 +25,6 @@ import java.util.List;
 public class UserController {
 
     UserService userService;
-    PostService postService;
 
     // ── GET /api/users/me ──────────────────────────────────
     // Lấy thông tin user đang đăng nhập
@@ -164,27 +161,4 @@ public class UserController {
         );
     }
 
-    // ── GET /api/users/admin/posts ─────────────────────────
-    // ADMIN: Xem tất cả bài đăng
-    @GetMapping("/admin/posts")
-    public ResponseEntity<ApiResponse<List<SportPostResponse>>> getAllPosts() {
-        return ResponseEntity.ok(
-                ApiResponse.<List<SportPostResponse>>builder()
-                        .result(postService.getAllPosts())
-                        .build()
-        );
-    }
-
-    // ── DELETE /api/users/admin/posts/{postId} ─────────────
-    // ADMIN: Xoá bài đăng vi phạm
-    @DeleteMapping("/admin/posts/{postId}")
-    public ResponseEntity<ApiResponse<Void>> adminDeletePost(
-            @PathVariable Long postId) {
-        postService.adminDeletePost(postId);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .message("Đã xoá bài đăng")
-                        .build()
-        );
-    }
 }

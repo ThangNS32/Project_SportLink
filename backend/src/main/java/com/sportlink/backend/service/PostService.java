@@ -14,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,58 +36,6 @@ public class PostService {
     UserRepository userRepository;
     SportPostMapper postMapper;
     SportRepository sportRepository;
-
-    // ── Lấy danh sách bài đăng ────────────────────────────
-    @Transactional(readOnly = true)
-    public List<SportPostResponse> getPosts(
-            SportType sportType,
-            PostType postType,
-            Double userLat,
-            Double userLng,
-            Double radiusKm) {
-
-        // Fetch từ DB theo filter cơ bản
-        List<SportPost> posts;
-        if (sportType != null && postType != null) {
-            posts = postRepository.findByStatusAndSportTypeAndPostType(
-                    PostStatus.open, sportType, postType);
-        } else if (sportType != null) {
-            posts = postRepository.findByStatusAndSportType(PostStatus.open, sportType);
-        } else {
-            posts = postRepository.findByStatus(PostStatus.open);
-        }
-
-        return posts.stream()
-                .map(post -> {
-                    SportPostResponse response = postMapper.toResponse(post);
-                    // Tính khoảng cách nếu user gửi tọa độ
-                    if (userLat != null && userLng != null && post.getLocationLat() != null && post.getLocationLng() != null) {
-                        double dist = calculateDistance(
-                                userLat, userLng,
-                                post.getLocationLat().doubleValue(),
-                                post.getLocationLng().doubleValue()
-                        );
-                        response.setDistanceKm(Math.round(dist * 10.0) / 10.0);
-                    }
-                    return response;
-                })
-                // Lọc theo bán kính (chỉ khi có tọa độ)
-                .filter(r -> userLat == null || userLng == null
-                        || r.getDistanceKm() == null || radiusKm == null
-                        || r.getDistanceKm() <= radiusKm)
-                // Sắp xếp: gần nhất trước, nếu không có tọa độ thì mới nhất trước
-                .sorted(Comparator.comparingDouble(
-                        r -> r.getDistanceKm() != null ? r.getDistanceKm() : Double.MAX_VALUE))
-                .collect(Collectors.toList());
-    }
-
-    // ── Xem chi tiết 1 bài đăng ───────────────────────────
-    @Transactional(readOnly = true)
-    public SportPostResponse getPostById(Long postId) {
-        SportPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
-        return postMapper.toResponse(post);
-    }
 
     // ── Lấy bài đăng của mình ─────────────────────────────
     @Transactional(readOnly = true)
@@ -393,25 +340,5 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-
-    // ADMIN: Lấy tất cả bài đăng
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @Transactional(readOnly = true)
-    public List<SportPostResponse> getAllPosts() {
-        return postRepository.findAll()
-                .stream()
-                .map(postMapper::toResponse)
-                .collect(Collectors.toList());
-    }
-
-    // ADMIN: Xoá bài đăng bất kỳ
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @Transactional
-    public void adminDeletePost(Long postId) {
-        SportPost post = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
-        postRepository.delete(post);
-        log.warn("Admin deleted post: {}", postId);
-    }
 
 }

@@ -444,3 +444,109 @@ _Kỹ thuật:_
 - Xóa conversation xong reappear ngay lập tức → navigate("/chat") gây remount → đã xóa dòng navigate
 **Blocker:** Không có
 **Việc tiếp theo:** Deploy — backend lên Railway (hoặc Render), frontend lên Cloudflare Pages, đổi baseURL trong axiosConfig.js
+
+---
+
+### 2026-05-25
+
+**Đang làm:** Fix bugs sau khi deploy lên production (Render + Vercel + Aiven)
+**Đến đâu rồi:** Xong hết, đã test trên production.
+**Files đã sửa:**
+- `frontend/src/components/post/FilterSidebar.jsx` — dùng `createPortal` để render LocationPicker vào `document.body`, tránh bị clip bởi `overflow-y: auto` của sidebar
+- `backend/src/main/java/com/sportlink/backend/Application.java` — thêm `TimeZone.setDefault(Asia/Ho_Chi_Minh)` trước khi app khởi động, fix lệch 7 tiếng giữa server UTC và giờ Việt Nam
+- `backend/src/main/java/com/sportlink/backend/service/RatingService.java` — xóa `createRatingNotification` khỏi `submitRating`, chuyển vào `revealRatings` để notification chỉ gửi khi rating được reveal (blind review)
+**Bugs đã fix:**
+- LocationPicker overlay bị clip trong FilterSidebar → createPortal
+- Rating eligibility check fail trên production dù đã qua giờ chơi → timezone UTC vs Vietnam
+- Bảng `rating_tags` thiếu trên Aiven → tạo thủ công qua MySQL Workbench kết nối Aiven
+- Firestore conversations chứa tin nhắn test cũ từ local dev → xóa collection `conversations` trên Firebase console
+- Rating notification lộ thông tin trước khi reveal (blind review bị vi phạm) → chuyển notification sang revealRatings
+- Google login + Cloudinary avatar upload đã hoạt động từ session trước
+**Blocker:** Không có
+**Việc tiếp theo:** Hỏi supervisor xem production ổn chưa, sau đó làm report
+
+---
+
+### 2026-05-25 (session 2)
+
+**Đang làm:** Chuẩn bị đồ án tốt nghiệp — vẽ Use Case Diagram + tìm hiểu cấu trúc report
+**Đến đâu rồi:** Đã vẽ xong Use Case Diagram (PlantUML) với 1 actor User, 8 package, 26 use case. Chưa bắt đầu viết report.
+**Files đã sửa:** Không có (session thiết kế tài liệu)
+**Use Case Diagram đã chốt:**
+- Actor: User (không có Admin)
+- Package: Xác thực, Quản lý hồ sơ, Quản lý bài đăng, Tham gia trận đấu, Nhắn tin, Thông báo, Đánh giá uy tín, Chatbot AI
+- Quan hệ: `<<extend>>` cho Đăng nhập Google; `<<include>>` cho Chọn địa điểm, Lọc bài đăng, Upload avatar, Quản lý môn thể thao, Đánh dấu đã đọc
+**Phát hiện thêm:** Render free tier tự spin down sau 15 phút không có request → posts load mãi trên production → fix bằng UptimeRobot ping mỗi 5 phút
+**Blocker:** Không có
+**Việc tiếp theo:** Tiếp tục viết report đồ án tốt nghiệp (các chương còn lại sau Use Case Diagram)
+
+---
+
+### 2026-06-01
+
+**Đang làm:** Tài liệu đồ án tốt nghiệp — vẽ Sequence Diagrams cho 14 use case (PlantUML)
+**Đến đâu rồi:** Đã viết đủ 14 PlantUML diagrams với naming convention đúng theo mẫu (`actor Actor as actor`, `entity User as user`). Chưa kiểm tra kỹ từng diagram, chưa xong các phần khác của report.
+**Files đã sửa:**
+- `Project_SportLink/sequence-diagrams.drawio` — đã tạo (draw.io XML, 11 trang, từ session trước)
+**Diagrams đã viết (PlantUML, chưa lưu file riêng):**
+- Login, Register
+- Manage Posts (Basic Flow, Update Sub Flow, Delete Sub Flow)
+- View and Filter Posts
+- Manage Profile (Basic Flow, gộp View + Update)
+- Match Participation (Basic Flow, Accept, Reject, Rate Sub Flow)
+- Receive Notification
+- Messaging (Basic Flow, gộp Send)
+- AI Chatbot
+**Convention đã chốt:** `actor Actor as actor` (hình nhân) — theo mẫu report chị senior; `entity User as user` (không dùng UserData)
+**Blocker:** Không có
+**Việc tiếp theo:** Kiểm tra lại nội dung 14 diagrams cho đúng với logic thực tế của app, sau đó tiếp tục các phần còn lại của report đồ án
+
+---
+
+### 2026-06-04 → 2026-06-05
+
+**Đang làm:** Báo cáo đồ án tốt nghiệp — Chapter 3 (verify use case descriptions) + Chapter 4 Methodology
+**Đến đâu rồi:** Chưa xong Methodology.
+- **Chapter 3 (xong):** Đã verify toàn bộ 3.4.1–3.4.8 Use Case and Scenario Description so với code thực tế. Các fix đã áp dụng: Match Participation Basic Flow bỏ bước confirm riêng (gộp vào bước 5), Messaging Basic Flow bỏ bước confirm send.
+- **Chapter 4 (đang làm):** Đã xong 4.1 Tools and Techniques (IntelliJ IDEA, Spring Boot, MySQL, Firebase Firestore, JWT, Axios, ReactJS, Leaflet, DeepSeek AI, Cloudinary, Render, Vercel, Postman). Đã vẽ xong ERD các bảng. Đang làm phần trình bày và mô tả từng bảng database (4.3).
+**Files đã sửa:** Không có thay đổi code (session viết báo cáo)
+**Blocker:** Không có
+**Việc tiếp theo:** Tiếp tục Chapter 4 Methodology — hoàn thiện 4.3 Database Design (mô tả từng bảng) + 4.2 System Architecture + 4.4 Use Cases Implementation
+
+---
+
+### 2026-06-08 → 2026-06-09
+
+**Đang làm:** Báo cáo đồ án tốt nghiệp — Chapter 4 Methodology (4.3 Database Design + 4.2 System Architecture)
+**Đến đâu rồi:**
+- **4.3 Database Design (xong):** Đã viết mô tả đầy đủ tất cả các bảng theo pattern 3 bullet (English + Tiếng Việt): users, user_sports, sport_posts, join_requests, notifications, ratings, rating_tags, invalidated_tokens. Phát hiện thiếu bảng rating_tags trong schema.sql và bổ sung. Phát hiện thiếu cột is_revealed trong ratings và bổ sung.
+- **4.2 System Architecture (chưa xong):** Đã có draft hoàn chỉnh gồm Container Diagram + Component Diagram (Mermaid) và 4 subsection (4.2.1 Frontend / 4.2.2 Backend / 4.2.3 Database / 4.2.4 Real-time). Chưa finalize vào report.
+**Files đã sửa:** Không có thay đổi code (session viết báo cáo)
+**Blocker:** Không có
+**Việc tiếp theo:** Hoàn thiện 4.2 System Architecture + các phần còn lại của report + viết mô tả các Sequence Diagram
+
+---
+
+### 2026-06-15
+
+**Đang làm:** Báo cáo đồ án tốt nghiệp — Chapter 5, Chapter 6, Bibliography
+**Đến đâu rồi:** Xong toàn bộ report. Đang chờ thầy review và phản hồi chỉnh sửa.
+- **Chapter 5 Result and Discussion (xong):** Viết 5.1 Result (7 mô-đun: Authentication, Manage Posts, Manage Profile, Match Participation, Real-time Messaging, Notifications, AI Chatbot) + 5.2 Discussion (5 limitation: Render free tier cold start, polling notifications, no admin UI, blind review edge cases, chatbot accuracy).
+- **Chapter 6 Conclusion and Future Works (xong):** 6.1 Conclusion (intro paragraph + 7 bullet chức năng) + 6.2 Future Works (8 bullet: mobile app, push notifications, advanced search, admin dashboard, group chat, tournament, AI chatbot improvements, scalable infra).
+- **Bibliography (xong):** 4 tài liệu — [1] Xia Qianqian (sports social APP thesis, University of Turku 2018), [2] Rod Johnson (Spring Framework), [3] Larry Ullman (MySQL), [4] Alex Banks (Learning React). Citation [1] đặt trong Chapter 1 Introduction.
+- **Appendices:** Chưa làm — sẽ chụp màn hình các trang chính của app để đưa vào.
+**Files đã sửa:** Không có thay đổi code (session viết báo cáo)
+**Blocker:** Đang chờ feedback từ thầy
+**Việc tiếp theo:** Đọc và hiểu chi tiết toàn bộ code dự án — từng chức năng được implement như thế nào (frontend + backend)
+
+---
+
+### 2026-06-16
+
+**Đang làm:** Ôn code toàn bộ dự án để chuẩn bị bảo vệ đồ án — đi qua từng feature, giải thích frontend + backend + database
+**Đến đâu rồi:**
+- **Feature 1 — Authentication (xong):** Đã giải thích đầy đủ: SecurityConfig, User entity, InvalidatedToken, AuthController, AuthService (register/login/logout/refresh/Google OAuth), CustomJwtDecoder, ApplicationInitConfig, axiosConfig.js (request interceptor + 401 popup), authApi.js, AuthModal.jsx, GoogleCallbackPage.jsx
+- **Feature 2–9 (chưa làm):** Posts, Filter/Search, Profile, Join Requests, Chat, Notifications, Rating, Chatbot
+**Files đã sửa:** Không có thay đổi code (session ôn tập)
+**Blocker:** Không có
+**Việc tiếp theo:** Feature 2 — Quản lý bài đăng (Posts): tạo/sửa/xóa bài, hiển thị danh sách, auto-expire

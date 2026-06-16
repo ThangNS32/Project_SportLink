@@ -25,22 +25,6 @@ public class PostController {
 
     PostService postService;
 
-    // GET /api/posts?sportType=bong_da&postType=find_team&userLat=10.7&userLng=106.6&radiusKm=5
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<SportPostResponse>>> getPosts(
-            @RequestParam(required = false) SportType sportType,
-            @RequestParam(required = false) PostType postType,
-            @RequestParam(required = false) Double userLat,
-            @RequestParam(required = false) Double userLng,
-            @RequestParam(required = false, defaultValue = "5") Double radiusKm) {
-
-        return ResponseEntity.ok(
-                ApiResponse.<List<SportPostResponse>>builder()
-                        .result(postService.getPosts(sportType, postType, userLat, userLng, radiusKm))
-                        .build()
-        );
-    }
-
     // GET /api/posts/me
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<List<SportPostResponse>>> getMyPosts() {
@@ -86,17 +70,6 @@ public class PostController {
                         .result(postService.searchPosts(
                                 sportType, postType, skillLevel,
                                 playDate, timeFrom, userLat, userLng,playFormat,slotsRange,distanceRange))
-                        .build()
-        );
-    }
-
-    // GET /api/posts/{postId}
-    @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<SportPostResponse>> getPostById(
-            @PathVariable Long postId) {
-        return ResponseEntity.ok(
-                ApiResponse.<SportPostResponse>builder()
-                        .result(postService.getPostById(postId))
                         .build()
         );
     }
