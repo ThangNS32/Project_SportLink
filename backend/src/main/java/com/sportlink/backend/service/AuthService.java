@@ -150,7 +150,6 @@ public class AuthService {
             );
         }
 
-        // Tạo token mới
         String email = signedJWT.getJWTClaimsSet().getSubject();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));

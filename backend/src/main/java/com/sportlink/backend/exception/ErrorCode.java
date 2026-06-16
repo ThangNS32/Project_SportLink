@@ -45,6 +45,7 @@ public enum ErrorCode {
     RATING_NOT_ALLOWED(5001, "Chưa đủ điều kiện để đánh giá"),
     ALREADY_RATED(5002, "Bạn đã đánh giá người này rồi"),
     CANNOT_RATE_YOURSELF(5003, "Không thể tự đánh giá bản thân"),
+    RATING_DEADLINE_PASSED(5004, "Đã hết thời hạn đánh giá (3 ngày kể từ buổi chơi)"),
 
     // ── Sport ──────────────────────────────────────────────
     SPORT_ALREADY_ADDED(6001, "Bạn đã thêm môn thể thao này rồi"),

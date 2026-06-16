@@ -53,6 +53,12 @@ public class RatingService {
             throw new AppException(ErrorCode.RATING_NOT_ALLOWED);
         }
 
+        //Điều kiện 3: còn trong vòng 3 ngày kể từ playTime
+        LocalDateTime deadline = joinRequest.getPost().getPlayTime().plusDays(3);
+        if (LocalDateTime.now().isAfter(deadline)) {
+            throw new AppException(ErrorCode.RATING_DEADLINE_PASSED);
+        }
+
         // Điều kiện 3: chưa đánh giá request này
         if (ratingRepository.existsByRater_UserIdAndRequest_RequestId(
                 currentUser.getUserId(), request.getRequestId())) {

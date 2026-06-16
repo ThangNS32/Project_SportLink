@@ -162,8 +162,21 @@ export default function ChatWindow({ conversationId, onStatusChange }) {
   const otherName = isOwner ? conv.requesterName : conv.ownerName;
   const actionLabel = conv.postType === "find_rival" ? "thách đấu" : "tham gia";
   const playDatePassed = conv.playDate && new Date(conv.playDate) < new Date();
+  const ratingDeadline = conv.playDate
+    ? new Date(new Date(conv.playDate).getTime() + 3 * 24 * 60 * 60 * 1000)
+    : null;
+  const withinRatingWindow = ratingDeadline && new Date() < ratingDeadline;
   const alreadyRated = isOwner ? conv.ratedByOwner : conv.ratedByRequester;
-  const canRate = conv.status === "accepted" && playDatePassed && !alreadyRated;
+  const canRate =
+    conv.status === "accepted" &&
+    playDatePassed &&
+    withinRatingWindow &&
+    !alreadyRated;
+  const ratingExpired =
+    conv.status === "accepted" &&
+    playDatePassed &&
+    !withinRatingWindow &&
+    !alreadyRated;
 
   return (
     <div className="chat-window">
@@ -211,6 +224,11 @@ export default function ChatWindow({ conversationId, onStatusChange }) {
             >
               ⭐ Đánh giá {otherName}
             </button>
+          )}
+          {ratingExpired && (
+            <span className="chat-rating-expired">
+              Đã hết thời hạn đánh giá
+            </span>
           )}
           {!canRate &&
             alreadyRated &&

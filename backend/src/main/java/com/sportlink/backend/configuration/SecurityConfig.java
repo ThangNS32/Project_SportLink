@@ -26,7 +26,7 @@ public class SecurityConfig {
             "/api/auth/introspect",
             "/api/auth/logout",
             "/api/auth/refresh",
-            "/api/auth/google"      // Đăng nhập Google
+            "/api/auth/google"
     };
 
     private final CustomJwtDecoder customJwtDecoder;

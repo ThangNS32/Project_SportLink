@@ -23,29 +23,29 @@ import "./chat.css";
     const navigate = useNavigate();                                                                                                                                  
     const currentUser = JSON.parse(localStorage.getItem("user") || "{}");     
     
-    const handleDelete = async (e, convId) => {                                                                                                                        
-      e.stopPropagation(); // Không navigate vào chat khi click ✕                                                                                                        
-                                                                                                                                                                        
-      if (!window.confirm("Xóa cuộc trò chuyện này?")) return;                                                                                                           
-                                                                                                                                                                        
-      // Xóa toàn bộ messages trước (Firestore không tự xóa subcollection)                                                                                               
-      const msgsRef = collection(db, "conversations", convId, "messages");
-      const msgsSnap = await getDocs(msgsRef);                                                                                                                           
-      await Promise.all(msgsSnap.docs.map((d) => deleteDoc(d.ref)));                                                                                                     
-    
-      // Xóa conversation document                                                                                                                                       
-      await deleteDoc(doc(db, "conversations", convId));       
-      
-      // Lưu vào localStorage để giữ sau F5
-      const key = `hiddenConvs_${currentUser.userId}`;                                                                                                                     
-      const hidden = JSON.parse(localStorage.getItem(key) || "[]");                                                                                                        
-      if (!hidden.includes(convId)) {
-        localStorage.setItem(key, JSON.stringify([...hidden, convId]));                                                                                                    
-      } 
-                                                                                                                                                                        
-      // Báo ChatPage reload list                                                                                                                                        
-      onDelete?.(convId);
-    };              
+    const handleDelete = async (e, convId) => {                                                                                                                                          
+    e.stopPropagation();                                                                                                                                                               
+    if (!window.confirm("Xóa cuộc trò chuyện này?")) return;                                                                                                                           
+                                                                                                                                                                                       
+    // Ẩn ngay khỏi UI trước, không chờ Firestore                                                                                                                                      
+    const key = `hiddenConvs_${currentUser.userId}`;                                                                                                                                   
+    const hidden = JSON.parse(localStorage.getItem(key) || "[]");                                                                                                                      
+    if (!hidden.includes(convId)) {                                                                                                                                                  
+      localStorage.setItem(key, JSON.stringify([...hidden, convId]));
+    }                                                                                                                                                                                  
+    onDelete?.(convId);
+    if (convId === activeId) navigate("/chat");                                                                                                                                        
+                                                                                                                                                                                     
+    // Xóa Firestore trong background sau khi UI đã cập nhật                                                                                                                           
+    try {
+      const msgsRef = collection(db, "conversations", convId, "messages");                                                                                                             
+      const msgsSnap = await getDocs(msgsRef);                                                                                                                                       
+      await Promise.all(msgsSnap.docs.map((d) => deleteDoc(d.ref)));                                                                                                                   
+      await deleteDoc(doc(db, "conversations", convId));
+    } catch (err) {                                                                                                                                                                    
+      console.error("Xóa Firestore thất bại:", err);                                                                                                                                 
+    }                                                                                                                                                                                  
+  };             
    
     // convMessages: { "req_1": [msg, msg, ...], "req_2": [...] }                                                                                                      
     // Khác với lastMessages cũ (chỉ lưu 1 tin) — giờ lưu 50 tin gần nhất để đếm                                                                                     
