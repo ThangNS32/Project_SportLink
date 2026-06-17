@@ -76,4 +76,9 @@ public class OverpassController {
                     .body("{\"elements\":[]}");
         }
     }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("OK");
+    }
 }
