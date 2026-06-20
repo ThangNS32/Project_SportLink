@@ -7,9 +7,9 @@ import {
   limit,
   onSnapshot,
   deleteDoc, 
-  doc,
   getDocs,
 } from "firebase/firestore";
+import { arrayUnion, doc as firestoreDoc, setDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import "./chat.css";
                                                                                                                                                                        
@@ -24,27 +24,24 @@ import "./chat.css";
     const currentUser = JSON.parse(localStorage.getItem("user") || "{}");     
     
     const handleDelete = async (e, convId) => {                                                                                                                                          
-    e.stopPropagation();                                                                                                                                                               
-    if (!window.confirm("Xóa cuộc trò chuyện này?")) return;                                                                                                                           
+      e.stopPropagation();                                                                                                                                                             
+      if (!window.confirm("Xóa cuộc trò chuyện này?")) return;                                                                                                                       
                                                                                                                                                                                        
-    // Ẩn ngay khỏi UI trước, không chờ Firestore                                                                                                                                      
-    const key = `hiddenConvs_${currentUser.userId}`;                                                                                                                                   
-    const hidden = JSON.parse(localStorage.getItem(key) || "[]");                                                                                                                      
-    if (!hidden.includes(convId)) {                                                                                                                                                  
-      localStorage.setItem(key, JSON.stringify([...hidden, convId]));
-    }                                                                                                                                                                                  
-    onDelete?.(convId);
-    if (convId === activeId) navigate("/chat");                                                                                                                                        
-                                                                                                                                                                                     
-    // Xóa Firestore trong background sau khi UI đã cập nhật                                                                                                                           
-    try {
-      const msgsRef = collection(db, "conversations", convId, "messages");                                                                                                             
-      const msgsSnap = await getDocs(msgsRef);                                                                                                                                       
-      await Promise.all(msgsSnap.docs.map((d) => deleteDoc(d.ref)));                                                                                                                   
-      await deleteDoc(doc(db, "conversations", convId));
-    } catch (err) {                                                                                                                                                                    
-      console.error("Xóa Firestore thất bại:", err);                                                                                                                                 
-    }                                                                                                                                                                                  
+      // Ẩn khỏi UI ngay, không chờ Firestore                                                                                                                                          
+      onDelete?.(convId);                                                                                                                                                              
+      if (convId === activeId) navigate("/chat");                                                                                                                                      
+                                                                                                                                                                                       
+      try {                                                                                                                  
+          const settingsRef = firestoreDoc(db, "userSettings", String(currentUser.userId));                                                                                            
+          await setDoc(settingsRef, { hiddenConvs: arrayUnion(convId) }, { merge: true });                                                                                                                                                                             
+          // Xóa nội dung tin nhắn trên Firestore                                                                                                                                      
+          const msgsRef = collection(db, "conversations", convId, "messages");                                                                                                         
+          const msgsSnap = await getDocs(msgsRef);                                                                                                                                     
+          await Promise.all(msgsSnap.docs.map((d) => deleteDoc(d.ref)));                                                                                                               
+          await deleteDoc(firestoreDoc(db, "conversations", convId));                                                                                                                  
+      } catch (err) {                                                                                                                                                                  
+          console.error("Xóa thất bại:", err);                                                                                                                                         
+      }                                                                                                                                                                                
   };             
    
     // convMessages: { "req_1": [msg, msg, ...], "req_2": [...] }                                                                                                      

@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import {
-  doc,
-  setDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "./firebase";
 import ConversationList from "./ConversationList";
 import ChatWindow from "./ChatWindow";
@@ -50,9 +46,9 @@ export default function ChatPage() {
         ownerName: jr.ownerName,
         ownerAvatar: jr.ownerAvatar || null,
         status: "pending",
-        playDate: jr.postPlayTime || null,                                                                                                                   
-        ratedByRequester: false,                                                                                                                                
-        ratedByOwner: false,                   
+        playDate: jr.postPlayTime || null,
+        ratedByRequester: false,
+        ratedByOwner: false,
         createdAt: serverTimestamp(),
       },
       { merge: true },
@@ -74,21 +70,29 @@ export default function ChatPage() {
     });
   };
 
-  const fetchConversations = () => {
+  const fetchConversations = async () => {
     const userId = JSON.parse(localStorage.getItem("user") || "{}").userId;
-    const hidden = JSON.parse(localStorage.getItem(`hiddenConvs_${userId}`) || "[]");                                                                                  
-   
-    getMyConversations()                                                                                                                                               
-      .then((res) => {                                                                                                                                               
-        const filtered = res.data.result.filter(                                                                                                                       
-          (c) => !hidden.includes(`req_${c.requestId}`)                                                                                                              
+
+    // Đọc hidden list từ Firestore thay vì localStorage
+    // Firestore persist qua mọi thiết bị và lần đăng nhập
+    let hidden = [];
+    try {
+      const settingsSnap = await getDoc(
+        doc(db, "userSettings", String(userId)),
+      );
+      hidden = settingsSnap.data()?.hiddenConvs || [];
+    } catch (_) {}
+    getMyConversations()
+      .then((res) => {
+        const filtered = res.data.result.filter(
+          (c) => !hidden.includes(`req_${c.requestId}`),
         );
         setConversations(filtered);
-      })                                                                                                                                                               
+      })
       .catch(() => {})
-      .finally(() => setLoading(false));                                                                                                                               
-  };                                                                                                                                                                    
-                  
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     fetchConversations();
   }, []);
@@ -109,18 +113,21 @@ export default function ChatPage() {
           conversations={conversations}
           loading={loading}
           activeId={conversationId}
-          onDelete={(deletedConvId) =>                                                                                                                                         
-            setConversations((prev) =>                                                                                                                                       
-              prev.filter((c) => `req_${c.requestId}` !== deletedConvId)                                                                                                       
-            )                                                                                                                                                                
-          }  
+          onDelete={(deletedConvId) =>
+            setConversations((prev) =>
+              prev.filter((c) => `req_${c.requestId}` !== deletedConvId),
+            )
+          }
         />
       </div>
 
       {/* Cột phải — cửa sổ chat hoặc placeholder */}
       <div className="chat-main">
         {conversationId ? (
-          <ChatWindow conversationId={conversationId} onStatusChange={fetchConversations} />
+          <ChatWindow
+            conversationId={conversationId}
+            onStatusChange={fetchConversations}
+          />
         ) : (
           <div className="chat-empty">Chọn một cuộc trò chuyện để bắt đầu</div>
         )}
