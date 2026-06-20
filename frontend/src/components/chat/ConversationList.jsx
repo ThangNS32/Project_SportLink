@@ -35,10 +35,7 @@ import "./chat.css";
           const settingsRef = firestoreDoc(db, "userSettings", String(currentUser.userId));                                                                                            
           await setDoc(settingsRef, { hiddenConvs: arrayUnion(convId) }, { merge: true });                                                                                                                                                                             
           // Xóa nội dung tin nhắn trên Firestore                                                                                                                                      
-          const msgsRef = collection(db, "conversations", convId, "messages");                                                                                                         
-          const msgsSnap = await getDocs(msgsRef);                                                                                                                                     
-          await Promise.all(msgsSnap.docs.map((d) => deleteDoc(d.ref)));                                                                                                               
-          await deleteDoc(firestoreDoc(db, "conversations", convId));                                                                                                                  
+                                                                                                                            
       } catch (err) {                                                                                                                                                                  
           console.error("Xóa thất bại:", err);                                                                                                                                         
       }                                                                                                                                                                                
