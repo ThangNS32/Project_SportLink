@@ -334,3 +334,22 @@
   color: #f87171;
   border: 1px solid rgba(248, 113, 113, 0.25);
 }
+
+.pf-location-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.pf-location-btn--empty {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.pf-location-btn--filled {
+  color: #fff;
+}

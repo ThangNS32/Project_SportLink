@@ -1,3 +1,5 @@
+import { useState } from "react";
+import LocationPicker from "../common/LocationPicker";
 import "../../styles/profile.css";
 
 function EditPostModal({
@@ -7,6 +9,8 @@ function EditPostModal({
   onSave,
   onClose,
 }) {
+  const [showPicker, setShowPicker] = useState(false);
+
   return (
     <div
       className="pf-modal-overlay"
@@ -29,15 +33,30 @@ function EditPostModal({
 
         <div className="pf-modal-field">
           <label>Địa điểm</label>
-          <input
-            type="text"
-            value={editPostData.locationName}
-            onChange={(e) =>
-              setEditPostData({ ...editPostData, locationName: e.target.value })
-            }
-            placeholder="Tên sân / địa điểm"
-          />
+          <button
+            type="button"
+            onClick={() => setShowPicker(true)}
+            className={`pf-location-btn ${editPostData.locationName ? "pf-location-btn--filled" : "pf-location-btn--empty"}`}
+          >
+            {editPostData.locationName || "Chọn sân..."}
+          </button>
         </div>
+
+        {showPicker && (
+          <LocationPicker
+            sportType={editPostData.sportType}
+            onSelect={(loc) => {
+              setEditPostData({
+                ...editPostData,
+                locationName: loc.locationName,
+                locationLat: loc.locationLat,
+                locationLng: loc.locationLng,
+              });
+              setShowPicker(false);
+            }}
+            onClose={() => setShowPicker(false)}
+          />
+        )}
 
         <div className="pf-modal-field">
           <label>Số slots</label>
