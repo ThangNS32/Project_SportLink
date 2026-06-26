@@ -36,44 +36,43 @@ export default function ChatPage() {
   // Tạo conversation document trên Firestore + ghi tin nhắn đầu tiên
   // Tại sao dùng setDoc với merge:true?
   // → Vì nếu user bấm "Tham gia" 2 lần (lỗi mạng), document đã tồn tại thì không ghi đè
-  const initFirestoreConversation = async (jr) => {
-    const convRef = doc(db, "conversations", `req_${jr.requestId}`);
-    await setDoc(
-      convRef,
-      {
-        requestId: jr.requestId,
-        postId: jr.postId,
-        postTitle: jr.postTitle,
-        postType: jr.postType,
-        requesterId: jr.requesterId,
-        requesterName: jr.requesterName,
-        requesterAvatar: jr.requesterAvatar || null,
-        ownerId: jr.ownerId,
-        ownerName: jr.ownerName,
-        ownerAvatar: jr.ownerAvatar || null,
-        status: "pending",
-        playDate: jr.postPlayTime || null,
-        ratedByRequester: false,
-        ratedByOwner: false,
-        createdAt: serverTimestamp(),
-      },
-      { merge: true },
-    );
-
-    const firstMsgRef = doc(
-      db,
+  const initFirestoreConversation = async (jr) => {                                                                                                                                                                                    
+    const convRef = doc(db, "conversations", `req_${jr.requestId}`);                                                                                                                                                                   
+    const snap = await getDoc(convRef);                                                                                                                                                                                                
+    if (snap.exists()) return;                                                                                                                                                                                                         
+                                                                                                                                                                                                                                     
+    await setDoc(convRef, {               
+      requestId: jr.requestId,
+      postId: jr.postId,                                                                                                                                                                                                               
+      postTitle: jr.postTitle,
+      postType: jr.postType,                                                                                                                                                                                                           
+      requesterId: jr.requesterId,                                                                                                                                                                                                   
+      requesterName: jr.requesterName,
+      requesterAvatar: jr.requesterAvatar || null,
+      ownerId: jr.ownerId,                
+      ownerName: jr.ownerName,
+      ownerAvatar: jr.ownerAvatar || null,                                                                                                                                                                                             
+      status: "pending",                      
+      playDate: jr.postPlayTime || null,                                                                                                                                                                                               
+      ratedByRequester: false,                                                                                                                                                                                                       
+      ratedByOwner: false,                                                                                                                                                                                                             
+      createdAt: serverTimestamp(),
+    });                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                     
+    const firstMsgRef = doc(                  
+      db,                                 
       "conversations",
-      `req_${jr.requestId}`,
+      `req_${jr.requestId}`,                                                                                                                                                                                                           
       "messages",
-      "initial",
-    );
+      "initial",                                                                                                                                                                                                                       
+    );                                                                                                                                                                                                                               
     await setDoc(firstMsgRef, {
       senderId: jr.requesterId,
       senderName: jr.requesterName,
       senderAvatar: jr.requesterAvatar || null,
-      content: jr.message,
+      content: jr.message,                
       createdAt: Timestamp.fromDate(new Date()),
-    });
+    });                                                                                                                                                                                                                                
   };
 
   const fetchConversations = async () => {
