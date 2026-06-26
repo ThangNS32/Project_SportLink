@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
 import { db } from "./firebase";
 import ConversationList from "./ConversationList";
 import ChatWindow from "./ChatWindow";
@@ -66,7 +72,7 @@ export default function ChatPage() {
       senderName: jr.requesterName,
       senderAvatar: jr.requesterAvatar || null,
       content: jr.message,
-      createdAt: serverTimestamp(),
+      createdAt: Timestamp.fromDate(new Date()),
     });
   };
 

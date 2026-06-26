@@ -99,29 +99,26 @@ export default function ChatWindow({ conversationId, onStatusChange }) {
     }
   };
 
-  const handleRespond = async (action) => {
-    if (!conv || responding) return;
-    setResponding(true);
-    try {
-      if (action === "accept") await acceptRequest(conv.requestId);
-      else await rejectRequest(conv.requestId);
-      await updateDoc(convRef, {
+  const handleRespond = async (action) => {                                                                                                                                                                                          
+    if (!conv || responding) return;                                                                                                                                                                                                   
+    setResponding(true);                  
+    try {                                                                                                                                                                                                                              
+      try {                                                                                                                                                                                                                            
+        if (action === "accept") await acceptRequest(conv.requestId);
+        else await rejectRequest(conv.requestId);                                                                                                                                                                                      
+      } catch (err) {                                                                                                                                                                                                                  
+        if (err.response?.data?.code !== 3003) throw err;
+      }                                                                                                                                                                                                                                
+      await updateDoc(convRef, {                                                                                                                                                                                                     
         status: action === "accept" ? "accepted" : "rejected",
-      });
+      });                                                                                                                                                                                                                              
       onStatusChange?.();
-    } catch (err) {
-      if (err.response?.data?.code === 3003) {
-        await updateDoc(convRef, {
-          status: action === "accept" ? "accepted" : "rejected",
-        }).catch(() => {});
-        onStatusChange?.();
-      } else {
-        alert(err.response?.data?.message || "Có lỗi xảy ra");
-      }
-    } finally {
-      setResponding(false);
+    } catch (err) {                                                                                                                                                                                                                    
+      alert(err.response?.data?.message || "Có lỗi xảy ra");                                                                                                                                                                         
+    } finally {                               
+      setResponding(false);               
     }
-  };
+  };            
 
   const toggleTag = (tag) => {
     setRatingTags((prev) =>
