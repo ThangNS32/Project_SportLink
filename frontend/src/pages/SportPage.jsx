@@ -79,10 +79,8 @@ function SportPage() {
   // Khi nhấn "Tìm kiếm": dùng /search
   const handleSearch = async () => {
     setLoading(true);
-    const searchLat =
-      selectedVenues.length > 0 ? selectedVenues[0].lat : userLat;
-    const searchLng =
-      selectedVenues.length > 0 ? selectedVenues[0].lng : userLng;
+    const searchLat = userLat;                                                                                                                                                                                                           
+    const searchLng = userLng;
     try {
       const params = {
         ...(selectedSportConfig?.sportType && {
@@ -94,11 +92,7 @@ function SportPage() {
         ...(timeFrom && { timeFrom }),
         ...(playFormat && hasPlayFormat && { playFormat }),
         ...(slotsRange && { slotsRange }),
-        ...(distanceRange
-          ? { distanceRange }
-          : selectedVenues.length > 0
-            ? { distanceRange: "under_1" }
-            : {}),
+        ...(distanceRange && { distanceRange }),
         ...(searchLat && { userLat: searchLat }),
         ...(searchLng && { userLng: searchLng }),
       };
@@ -158,7 +152,12 @@ function SportPage() {
     fetchInitial();
   };
 
-  const displayPosts = posts;
+  const displayPosts =                                                                                                                                                                                                                 
+    selectedVenues.length > 0                                                                                                                                                                                                          
+      ? posts.filter((p) =>
+          selectedVenues.some((v) => v.name === p.locationName),                                                                                                                                                                       
+        )                                                                                                                                                                                                                            
+      : posts;
 
   return (
     <div className="sp-page">
