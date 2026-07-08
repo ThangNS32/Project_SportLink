@@ -20,7 +20,10 @@ function SportPage() {
   // hasPlayFormat dựa theo sport đang chọn trong sidebar
   const selectedSportConfig = SPORT_CONFIG[selectedSportSlug];
   const hasPlayFormat = selectedSportConfig?.hasPlayFormat ?? false;
-  const isBanned = () => { const b = localStorage.getItem("banUntil"); return b && new Date(b) > new Date(); };
+  const isBanned = () => {
+    const b = localStorage.getItem("banUntil");
+    return b && new Date(b) > new Date();
+  };
 
   // Filter states
   const [postType, setPostType] = useState(() => {
@@ -91,7 +94,11 @@ function SportPage() {
         ...(timeFrom && { timeFrom }),
         ...(playFormat && hasPlayFormat && { playFormat }),
         ...(slotsRange && { slotsRange }),
-        ...(distanceRange && { distanceRange }),
+        ...(distanceRange
+          ? { distanceRange }
+          : selectedVenues.length > 0
+            ? { distanceRange: "under_1" }
+            : {}),
         ...(searchLat && { userLat: searchLat }),
         ...(searchLng && { userLng: searchLng }),
       };
@@ -112,8 +119,11 @@ function SportPage() {
   const resetFilters = () => {
     setSelectedSportSlug(sport || "");
     setPostType(
-      pathname === "/tim-doi-thu" ? "find_rival": 
-      pathname === "/tim-dong-doi"? "find_team" : "",
+      pathname === "/tim-doi-thu"
+        ? "find_rival"
+        : pathname === "/tim-dong-doi"
+          ? "find_team"
+          : "",
     );
     setPlayDate("");
     setTimeFrom("");
@@ -191,14 +201,20 @@ function SportPage() {
             </div>
             <button
               className="sp-create-btn"
-              onClick={() => { if (isBanned()) { alert("Tài khoản bị tạm khóa, bạn không thể đăng bài."); return; } setShowCreate(true); }}
+              onClick={() => {
+                if (isBanned()) {
+                  alert("Tài khoản bị tạm khóa, bạn không thể đăng bài.");
+                  return;
+                }
+                setShowCreate(true);
+              }}
             >
               + Tạo bài đăng
             </button>
           </div>
 
           {/* Số kết quả */}
-          <div className="sp-meta"> 
+          <div className="sp-meta">
             <span className="sp-count">
               <span className="sp-count-dot" />
               {displayPosts.length} / {total} kết quả
