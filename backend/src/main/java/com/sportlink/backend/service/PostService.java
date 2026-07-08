@@ -7,9 +7,7 @@ import com.sportlink.backend.entity.*;
 import com.sportlink.backend.exception.AppException;
 import com.sportlink.backend.exception.ErrorCode;
 import com.sportlink.backend.mapper.SportPostMapper;
-import com.sportlink.backend.repository.SportPostRepository;
-import com.sportlink.backend.repository.SportRepository;
-import com.sportlink.backend.repository.UserRepository;
+import com.sportlink.backend.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,6 +34,8 @@ public class PostService {
     UserRepository userRepository;
     SportPostMapper postMapper;
     SportRepository sportRepository;
+    RatingRepository ratingRepository;
+    JoinRequestRepository joinRequestRepository;
 
     // ── Lấy bài đăng của mình ─────────────────────────────
     @Transactional(readOnly = true)
@@ -127,7 +127,6 @@ public class PostService {
         return postMapper.toResponse(post);
     }
 
-    // ── Xoá bài đăng (chỉ chủ bài) ───────────────────────
     @Transactional
     public void deletePost(Long postId) {
         User user = getCurrentUser();
@@ -136,6 +135,16 @@ public class PostService {
 
         if (!post.getUser().getUserId().equals(user.getUserId()))
             throw new AppException(ErrorCode.NOT_POST_OWNER);
+
+        List<Long> requestIds = joinRequestRepository.findByPost_PostId(postId)
+                .stream()
+                .map(JoinRequest::getRequestId)
+                .toList();
+        if (!requestIds.isEmpty()) {
+            ratingRepository.deleteByRequest_RequestIdIn(requestIds);
+        }
+
+        joinRequestRepository.deleteByPost_PostId(postId);
 
         postRepository.delete(post);
         log.info("Post {} deleted by {}", postId, user.getEmail());

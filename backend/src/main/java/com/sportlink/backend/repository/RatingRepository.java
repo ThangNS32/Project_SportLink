@@ -38,4 +38,6 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
 
     List<Rating> findByRated_UserIdAndIsRevealedTrue(Long userId);
 
+    void deleteByRequest_RequestIdIn(List<Long> requestIds);
+
 }

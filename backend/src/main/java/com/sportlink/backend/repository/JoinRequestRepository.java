@@ -27,4 +27,8 @@ public interface JoinRequestRepository extends JpaRepository<JoinRequest, Long> 
     // Mục đích: đảm bảo chỉ đúng chủ bài mới được accept/reject
     // Nếu requestId không thuộc bài của ownerId → trả về empty → throw lỗi
     Optional<JoinRequest> findByRequestIdAndPost_User_UserId(Long requestId, Long ownerId);
+
+    void deleteByPost_PostId(Long postId);
+
+    List<JoinRequest> findByPost_PostId(Long postId);
 }
