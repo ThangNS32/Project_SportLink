@@ -82,6 +82,11 @@
   border-radius: 20px;
 }
 
+.pc-tag--sport {
+  background: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+}
+
 .pc-tag--skill {
   background: rgba(139, 92, 246, 0.15);
   color: #a78bfa;

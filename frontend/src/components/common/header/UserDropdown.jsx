@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
 const SPORT_LABEL = {
-  bong_da: "⚽ Bóng đá",
-  cau_long: "🏸 Cầu lông",
-  pickleball: "🏓 Pickleball",
+  bong_da: "Bóng đá",
+  cau_long: "Cầu lông",
+  pickleball: "Pickleball",
 };
 
 function getAvatarSrc(url) {
