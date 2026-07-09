@@ -66,6 +66,12 @@ const TYPE_LABEL = {
   find_rival: "Tìm đối thủ",
 };
 
+const SPORT_LABEL = {
+  bong_da: "Bóng đá",
+  cau_long: "Cầu lông",
+  pickleball: "Pickleball",
+};
+
 function PostCard({ post, isOwner, onEdit, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const [joining, setJoining] = useState(false);
@@ -83,6 +89,7 @@ function PostCard({ post, isOwner, onEdit, onDelete }) {
 
   const slotsLeft = (post.slotsTotal ?? 0) - (post.slotsFilled ?? 0);
   const skillLabel = SKILL_LABEL[post.skillLevel] || post.skillLevel;
+  const sportLabel = SPORT_LABEL[post.sportType] || post.sportType;
   const formatLabel = FORMAT_LABEL[post.playFormat] || post.playFormat;
   const typeLabel = TYPE_LABEL[post.postType] || post.postType;
   const avatarSrc = getAvatarSrc(post.userAvatarUrl);
@@ -184,6 +191,9 @@ function PostCard({ post, isOwner, onEdit, onDelete }) {
 
       {/* ── TAGS ROW ── */}
       <div className="pc-tags">
+        {sportLabel && (
+          <span className="pc-tag pc-tag--sport">{sportLabel}</span>
+        )}
         {skillLabel && (
           <span className="pc-tag pc-tag--skill">{skillLabel}</span>
         )}
