@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/api/overpass")
 public class OverpassController {
 
-    private static final String OVERPASS_URL = "https://overpass-api.de/api/interpreter";
+    private static final String OVERPASS_URL = "https://overpass.kumi.systems/api/interpreter";
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/nearby")
