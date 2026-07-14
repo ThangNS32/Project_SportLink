@@ -4,11 +4,14 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/overpass")
 public class OverpassController {
 
-    private static final String OVERPASS_URL = "https://overpass.kumi.systems/api/interpreter";
+    private static final String OVERPASS_URL_PRIMARY = "https://overpass.kumi.systems/api/interpreter";
+    private static final String OVERPASS_URL_FALLBACK = "https://overpass-api.de/api/interpreter";
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/nearby")
@@ -65,16 +68,18 @@ public class OverpassController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_PLAIN);
         HttpEntity<String> request = new HttpEntity<>(query, headers);
-        try {
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    OVERPASS_URL, request, String.class);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(response.getBody());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                    .body("{\"elements\":[]}");
+
+        for (String url : List.of(OVERPASS_URL_PRIMARY, OVERPASS_URL_FALLBACK)) {
+            try {
+                ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(response.getBody());
+            } catch (Exception ignored) {}
         }
+
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body("{\"elements\":[]}");
     }
 
     @GetMapping("/ping")
