@@ -11,10 +11,13 @@ import VenueList from "./locationPicker/VenueList";
 import VenueMap from "./locationPicker/VenueMap";
 
 function LocationPicker({ onSelect, onClose, multiSelect = false }) {
-  const userLat = parseFloat(localStorage.getItem("userLat")) || null;
-  const userLng = parseFloat(localStorage.getItem("userLng")) || null;
-  const userPos = userLat && userLng ? [userLat, userLng] : null;
-  const center = userPos || DEFAULT_CENTER;
+  const getInitialCenter = () => {                                                                                                                                                                                                   
+      const lat = parseFloat(localStorage.getItem("userLat")) || null;                                                                                                                                                                 
+      const lng = parseFloat(localStorage.getItem("userLng")) || null;                                                                                                                                                                 
+      return lat && lng ? [lat, lng] : DEFAULT_CENTER;                                                                                                                                                                                 
+    };
+                                                                                                                                                                                                                                       
+  const [center, setCenter] = useState(getInitialCenter);
 
   const [nearbyVenues, setNearbyVenues] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -27,15 +30,26 @@ function LocationPicker({ onSelect, onClose, multiSelect = false }) {
   
   const searchTimeout = useRef(null);
 
+  useEffect(() => {                                                                                                                                                                                                                    
+    if (!navigator.geolocation) return;                                                                                                                                                                                              
+    navigator.geolocation.getCurrentPosition(                                                                                                                                                                                          
+      ({ coords }) => {
+        const { latitude, longitude } = coords;                                                                                                                                                                                        
+        localStorage.setItem("userLat", latitude);                                                                                                                                                                                     
+        localStorage.setItem("userLng", longitude);
+        setCenter([latitude, longitude]);                                                                                                                                                                                              
+      },                                                                                                                                                                                                                             
+      () => {} 
+    );                                                                                                                                                                                                                                 
+  }, []);
+
   useEffect(() => {                                                                                                                                                    
     const [lat, lng] = center;                                                                                                                                         
                                           
-    // 1. Hiện cache ngay lập tức nếu có                                                                                                                               
     const cached = loadNearbyCache(lat, lng);
     if (cached && cached.length > 0) {                                                                                                                                 
       setNearbyVenues(cached);            
       setIsLoadingNearby(false);
-      // Vẫn refresh ngầm để cập nhật dữ liệu mới
       fetchNearbyVenues(center).then((fresh) => {                                                                                                                      
         if (fresh.length > 0) {
           setNearbyVenues(fresh);                                                                                                                                      
@@ -45,7 +59,6 @@ function LocationPicker({ onSelect, onClose, multiSelect = false }) {
       return;                                                                                                                                                          
     }                                     
 
-    // 2. Không có cache: fetch và hiện loading
     setIsLoadingNearby(true);
     fetchNearbyVenues(center)                                                                                                                                          
       .then((venues) => {
@@ -53,7 +66,7 @@ function LocationPicker({ onSelect, onClose, multiSelect = false }) {
         if (venues.length > 0) saveNearbyCache(lat, lng, venues);
       })
       .finally(() => setIsLoadingNearby(false));                                                                                                                       
-  }, []);
+  }, [center]);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
