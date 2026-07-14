@@ -3,6 +3,7 @@ package com.sportlink.backend.controller;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 import java.util.List;
 
@@ -12,7 +13,14 @@ public class OverpassController {
 
     private static final String OVERPASS_URL_PRIMARY = "https://overpass.kumi.systems/api/interpreter";
     private static final String OVERPASS_URL_FALLBACK = "https://overpass-api.de/api/interpreter";
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = buildRestTemplate();
+
+    private static RestTemplate buildRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);  
+        factory.setReadTimeout(12000);
+        return new RestTemplate(factory);
+    }
 
     @GetMapping("/nearby")
     public ResponseEntity<String> nearby(
