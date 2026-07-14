@@ -11,13 +11,10 @@ import VenueList from "./locationPicker/VenueList";
 import VenueMap from "./locationPicker/VenueMap";
 
 function LocationPicker({ onSelect, onClose, multiSelect = false }) {
-  const getInitialCenter = () => {                                                                                                                                                                                                   
-      const lat = parseFloat(localStorage.getItem("userLat")) || null;                                                                                                                                                                 
-      const lng = parseFloat(localStorage.getItem("userLng")) || null;                                                                                                                                                                 
-      return lat && lng ? [lat, lng] : DEFAULT_CENTER;                                                                                                                                                                                 
-    };
-                                                                                                                                                                                                                                       
-  const [center, setCenter] = useState(getInitialCenter);
+  const userLat = parseFloat(localStorage.getItem("userLat")) || null;
+  const userLng = parseFloat(localStorage.getItem("userLng")) || null;
+  const userPos = userLat && userLng ? [userLat, userLng] : null;
+  const center = userPos || DEFAULT_CENTER;
 
   const [nearbyVenues, setNearbyVenues] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -29,19 +26,6 @@ function LocationPicker({ onSelect, onClose, multiSelect = false }) {
   const [flyTarget, setFlyTarget] = useState(null);
   
   const searchTimeout = useRef(null);
-
-  useEffect(() => {                                                                                                                                                                                                                    
-    if (!navigator.geolocation) return;                                                                                                                                                                                              
-    navigator.geolocation.getCurrentPosition(                                                                                                                                                                                          
-      ({ coords }) => {
-        const { latitude, longitude } = coords;                                                                                                                                                                                        
-        localStorage.setItem("userLat", latitude);                                                                                                                                                                                     
-        localStorage.setItem("userLng", longitude);
-        setCenter([latitude, longitude]);                                                                                                                                                                                              
-      },                                                                                                                                                                                                                             
-      () => {} 
-    );                                                                                                                                                                                                                                 
-  }, []);
 
   useEffect(() => {                                                                                                                                                    
     const [lat, lng] = center;                                                                                                                                         
@@ -66,7 +50,7 @@ function LocationPicker({ onSelect, onClose, multiSelect = false }) {
         if (venues.length > 0) saveNearbyCache(lat, lng, venues);
       })
       .finally(() => setIsLoadingNearby(false));                                                                                                                       
-  }, [center]);
+  }, []);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
