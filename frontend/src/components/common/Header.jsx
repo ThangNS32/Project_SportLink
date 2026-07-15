@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import authApi from "../../api/authApi";
 import userApi from "../../api/userApi";
 import sportApi from "../../api/sportApi";
-import LocationDropdown from "./header/LocationDropdown";
 import UserDropdown from "./header/UserDropdown";
 import NotificationBell from "./header/NotificationBell";
 import { useNotifications } from "./header/useNotifications";
@@ -16,19 +15,10 @@ const NAV_ITEMS = [
   { label: "Tìm đồng đội", path: "/tim-dong-doi" },
 ];
 
-function detectRegionByLat(lat) {
-  if (lat > 17) return "Hà Nội";
-  if (lat >= 14) return "Đà Nẵng";
-  return "TP. Hồ Chí Minh";
-}
-
 function Header({ onLoginClick }) {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("token");
 
-  const [location, setLocation] = useState(
-    localStorage.getItem("userLocation") || "Hà Nội",
-  );
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const [userDetail, setUserDetail] = useState(null);
   const [favoriteSports, setFavoriteSports] = useState([]);
@@ -71,9 +61,6 @@ function Header({ onLoginClick }) {
       navigator.geolocation?.getCurrentPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
-          const detected = detectRegionByLat(latitude);
-          setLocation(detected);
-          localStorage.setItem("userLocation", detected);
           localStorage.setItem("userLat", latitude);
           localStorage.setItem("userLng", longitude);
         },
@@ -101,10 +88,6 @@ function Header({ onLoginClick }) {
     }
   };
 
-  const handleLocationSelect = (loc) => {
-    setLocation(loc);
-    localStorage.setItem("userLocation", loc);
-  };
 
   return (
     <>
@@ -149,12 +132,6 @@ function Header({ onLoginClick }) {
           </nav>
 
           <div className="home-header-actions">
-            {isLoggedIn && (
-              <LocationDropdown
-                location={location}
-                onSelect={handleLocationSelect}
-              />
-            )}
 
             {isLoggedIn && (
               <NotificationBell
